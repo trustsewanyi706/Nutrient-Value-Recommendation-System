@@ -1,0 +1,647 @@
+{% extends 'base.html' %} {% block title %} Yield-Prediction{% endblock title %} {% block body %}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <style>
+        .hero-image {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url("/static/images/a1.jpg");
+            height: 50%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+        
+        .backgr-image {
+            background-image: linear-gradient(rgba(0, 0, 0.1, 0.1), rgba(0, 0, 0.1, 0.1)), url("/static/images/8.jpeg");
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .hero-text {
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+        }
+        
+        .text-colors {
+            color: #7dcaf3;
+        }
+        
+        .btn-info {
+            background-color: #7dcaf3;
+            border-color: #fff;
+        }
+        
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 100px;
+            z-index: 999;
+            font-size: 10px;
+            border: none;
+            outline: none;
+            background-color: #7dcaf3;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+        }
+        
+        .aboutimg {
+            width: 100%;
+            height: 500px !important;
+        }
+        
+        #output-image {
+            width: 300px;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!--About us section-->
+    <div class="hero-image ">
+        <div class="hero-text">
+            <p class="breadcrumbs text-white font-weight-bold"><span class="mr-2"><a href="{{ url_for('hello_world') }}"
+                        class="text-white">Home /</a></span>
+                <span>Yield</span>
+            </p>
+            <h1 class="mb-0 bread font-weight-bold">Predict the yeild per given area based on location</h1>
+        </div>
+    </div>
+    <!--/About us section-->
+
+    <!-- second nav -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light container-fluid">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav mx-auto">
+                <a class="nav-item nav-link active" href="{{ url_for('dashboard') }}">Dashboard<span class="sr-only">(current)</span></a>
+                <a class="nav-item nav-link" href="{{ url_for('crop_recommend') }}">Crop</a>
+                <a class="nav-item nav-link" href="{{ url_for('fertilizer_recommendation') }}">Fertilizer</a>
+                <a class="nav-item nav-link" href="{{ url_for('yield_prediction') }}">Yield</a>
+                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- form section  -->
+
+    <h2 class="text-center m-4">Enter details</h2>
+    <div class="form-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <form  method="POST" action="{{ url_for('yield_prediction')}}">
+                    <table class="table">
+                        <thead>
+                            <tr class="font-weight-bold text-default">
+                                <th><center>Province</center></th>
+                                <th><center>District</center></th>
+                                <th><center>Ward</center></th>
+                                <th><center>Season</center></th>
+                                <th><center>Crop</center></th>
+                                <th><center>Area</center></th>
+                               
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="text-center">
+                                    <td>
+                                        <div class="form-group">
+                                            <select name="Jprovince" class="form-control" id="province" onchange="updateDistricts()" required>
+                                                <option value="">Select a province</option>
+                                                <option value="Bulawayo">Bulawayo</option>
+                                                <option value="Harare">Harare</option>
+                                                <option value="Manicaland">Manicaland</option>
+                                                <option value="Mashonaland Central">Mashonaland Central</option>
+                                                <option value="Mashonaland East">Mashonaland East</option>
+                                                <option value="Mashonaland West">Mashonaland West</option>
+                                                <option value="Masvingo">Masvingo</option>
+                                                <option value="Matabeleland North">Matabeleland North</option>
+                                                <option value="Matabeleland South">Matabeleland South</option>
+                                                <option value="Midlands">Midlands</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <select id="district" name="Jdistrict" class="form-control" onchange="updateWards()"required>
+                                                <option value="">Select a district</option>
+
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <select id="ward" name="Jward" class="form-control" >
+                                                <option value="">Select a ward</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <select id="season" class="form-control" name="Jseason" required>
+                                                <option value="">Select Season...</option>
+                                                <option value="Rainy">Rainy</option>
+                                                <option value="Dry">Dry</option>
+                                                <option value="Hot">Hot</option>
+                                                <option value="Cold">Cold</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <select id="crop" class="form-control" name="Jcrops" required>
+                                                <option value="">Select crop</option>
+                                                <option value="Maize">Maize</option>
+                                                <option value="Soybeans">Soybeans</option>
+                                                <option value="Groundnuts">Groundnuts (Peanuts)</option>
+                                                <option value="Cowpeas">Cowpeas</option>
+                                                <option value="Sunflower">Sunflower</option>
+                                                <option value="Sorghum">Sorghum</option>
+                                                <option value="Millet">Millet</option>
+                                                <option value="Beans">Beans</option>
+                                                <option value="SweetPotatoes">Sweet potatoes</option>
+                                                <option value="Watermelons">Watermelons</option>
+                                                <option value="Tomatoes">Tomatoes</option>
+                                                <option value="Cabbage">Cabbage</option>
+                                                <option value="Peppers">Peppers</option>
+                                                <option value="Okra">Okra</option>
+                                                <option value="Cucumbers">Cucumbers</option>
+                                                <option value="Wheat">Wheat</option>
+                                                <option value="Barley">Barley</option>
+                                                <option value="Oats">Oats</option>
+                                                <option value="Rye">Rye</option>
+                                                <option value="MustardGreens">Mustard greens</option>
+                                                <option value="Spinach">Spinach</option>
+                                                <option value="Kale">Kale</option>
+                                                <option value="Carrots">Carrots</option>
+                                                <option value="Beets">Beets</option>
+                                                <option value="Broccoli">Broccoli</option>
+                                                <option value="Cauliflower">Cauliflower</option>
+                                                <option value="Onions">Onions</option>
+                                                <option value="Garlic">Garlic</option>
+                                                <option value="Peas">Peas</option>
+                                                <option value="Radishes">Radishes</option>
+                                                <option value="Lettuce">Lettuce</option>
+                                                <option value="Eggplant">Eggplant</option>
+                                                <option value="Pumpkins">Pumpkins</option>
+                                                <option value="Squash">Squash</option>
+                                                <option value="Melons">Melons</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" name="Jarea" required placeholder="In Hectares">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                    </table>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-dark">Submit</button>
+                            </div>
+            </form>
+         </div>
+                            
+                            <script>
+                                function updateDistricts() {
+                                    var provinceSelect = document.getElementById("province");
+                                    var districtSelect = document.getElementById("district");
+                                    var selectedProvince = provinceSelect.value;
+                            
+                                    // Clear existing options
+                                    districtSelect.innerHTML = "<option value=''>Select a district</option>";
+                            
+                                    // Add options based on the selected province
+                                    if (selectedProvince === "Harare") {
+                                        districtSelect.innerHTML += "<option value='Harare'>Harare</option>";
+                                    } else if (selectedProvince === "Bulawayo") {
+                                        districtSelect.innerHTML += "<option value='Bulawayo'>Bulawayo</option>";
+                                    } else if (selectedProvince === "Manicaland") {
+                                        
+                                        districtSelect.innerHTML += `   <option value="Buhera">Buhera</option>
+                                                                        <option value="Chimanimani">Chimanimani</option>
+                                                                        <option value="Chipinge">Chipinge</option>
+                                                                        <option value="Makoni">Makoni</option>
+                                                                        <option value="Mutare">Mutare</option>
+                                                                        <option value="Mutasa">Mutasa</option>
+                                                                        <option value="Nyanga">Nyanga</option>
+                                                                        `;
+                                    } else if (selectedProvince === "Mashonaland Central") {
+
+                                        districtSelect.innerHTML += `   <option value="Bindura">Bindura</option> 
+                                                                        <option value="Guruve">Guruve</option> 
+                                                                        <option value="Mazowe">Mazowe</option> 
+                                                                        <option value="Mbire">Mbire</option> 
+                                                                        <option value="Mukumbura">Mukumbura</option> 
+                                                                        <option value="Muzarabani">Muzarabani</option> 
+                                                                        <option value="Rushinga">Rushinga</option> 
+                                                                        <option value="Shamva">Shamva</option>
+                                                                                                        `;
+
+                                    } else if (selectedProvince === "Mashonaland East") {
+                                        districtSelect.innerHTML += `<option value="Chikomba">Chikomba</option> 
+                                                                    <option value="Goromonzi">Goromonzi</option> 
+                                                                    <option value="Hwedza (Wedza)">Hwedza (Wedza)</option> 
+                                                                    <option value="Marondera">Marondera</option> 
+                                                                    <option value="Mudzi">Mudzi</option> 
+                                                                    <option value="Murehwa">Murehwa</option> 
+                                                                    <option value="Mutoko">Mutoko</option> 
+                                                                    <option value="Seke">Seke</option> 
+                                                                    <option value="Uzumba-Maramba-Pfungwe">Uzumba-Maramba-Pfungwe</option>`;
+                                    } else if (selectedProvince === "Mashonaland West") {
+                                        districtSelect.innerHTML += `<option value="Chegutu">Chegutu</option> 
+                                                                    <option value="Hurungwe">Hurungwe</option> 
+                                                                    <option value="Kadoma">Kadoma</option> 
+                                                                    <option value="Kariba">Kariba</option> 
+                                                                    <option value="Makonde">Makonde</option> 
+                                                                    <option value="Zvimba">Zvimba</option> `;
+                                    } else if (selectedProvince === "Masvingo") {
+                                        districtSelect.innerHTML += `<option value="Bikita">Bikita</option> 
+                                                                    <option value="Chiredzi">Chiredzi</option> 
+                                                                    <option value="Chivi">Chivi</option> 
+                                                                    <option value="Gutu">Gutu</option> 
+                                                                    <option value="Masvingo">Masvingo</option> 
+                                                                    <option value="Mwenezi">Mwenezi</option> 
+                                                                    <option value="Zaka">Zaka</option>`;
+                                    } else if (selectedProvince === "Matabeleland North") {
+                                        districtSelect.innerHTML += `<option value="Binga">Binga</option> 
+                                                                    <option value="Bubi">Bubi</option> 
+                                                                    <option value="Hwange">Hwange</option> 
+                                                                    <option value="Lupane">Lupane</option> 
+                                                                    <option value="Nkayi">Nkayi</option> 
+                                                                    <option value="Tsholotsho">Tsholotsho</option> 
+                                                                    <option value="Umguza">Umguza</option>`;
+                                    } else if (selectedProvince === "Matabeleland South") {
+                                        districtSelect.innerHTML += `<option value="Beitbridge">Beitbridge</option> 
+                                                                    <option value="Bulilimamangwe">Bulilimamangwe</option> 
+                                                                    <option value="Gwanda">Gwanda</option> 
+                                                                    <option value="Insiza">Insiza</option>
+                                                                    <option value="Matobo">Matobo</option> <
+                                                                    option value="Umzingwane">Umzingwane</option>`;
+                                    } else if (selectedProvince === "Midlands") {
+                                        districtSelect.innerHTML += ` <option value="Chirumhanzu">Chirumhanzu</option> 
+                                                                    <option value="Gokwe North">Gokwe North</option> 
+                                                                    <option value="Gokwe South">Gokwe South</option> 
+                                                                    <option value="Gweru">Gweru</option> 
+                                                                    <option value="Kwekwe">Kwekwe</option> 
+                                                                    <option value="Mberengwa">Mberengwa</option> 
+                                                                    <option value="Shurugwi">Shurugwi</option> 
+                                                                    <option value="Zvishavane">Zvishavane</option>`;
+                                    }
+                                }
+                            
+                                 function updateWards() {
+                                    var districtSelect = document.getElementById("district");
+                                    var wardSelect = document.getElementById("ward");
+                                    var selectedDistrict = districtSelect.value;
+
+                                    // Clear existing options
+                                    wardSelect.innerHTML = "<option value=''>Select a ward</option>";
+                            
+                                    // Add options based on the selected district
+                                    if (selectedDistrict === "Harare") {
+                                        wardSelect.innerHTML += "<option value='Budiriro'>Budiriro</option>";
+                                        wardSelect.innerHTML += "<option value='Kuwadzana'>Kuwadzana</option>";
+                                        wardSelect.innerHTML += "<option value='Dzivarasekwa'>Dzivarasekwa</option>";
+                                        wardSelect.innerHTML += "<option value='Warren Park'>Warren Park</option>";
+                                        wardSelect.innerHTML += "<option value='Kambuzuma'>Kambuzuma</option>";
+                                        wardSelect.innerHTML += "<option value='Waterfalls'>Waterfalls</option>";
+                                        wardSelect.innerHTML += "<option value='Rugare'>Rugare</option>";
+                                        wardSelect.innerHTML += "<option value='Belvedere'>Belvedere</option>";
+                                        wardSelect.innerHTML += "<option value='Avondale'>Avondale</option>";
+                                        wardSelect.innerHTML += "<option value='Eastlea'>Eastlea/option>";
+                                    } else if (selectedDistrict === "Bulawayo") {
+                                        wardSelect.innerHTML += "<option value='Pelandaba-Mpopoma'>Pelandaba-Mpopoma</option>";
+                                        wardSelect.innerHTML += "<option value='Njube-Lobengula'>Njube-Lobengula</option>";
+                                        wardSelect.innerHTML += "<option value='Mzilikazi'>Mzilikazi</option>";
+                                        wardSelect.innerHTML += "<option value='Makokoba'>Makokoba</option>";
+                                        wardSelect.innerHTML += "<option value=' Luveve'> Luveve</option>";
+                                        wardSelect.innerHTML += "<option value=' Cowdray Park'> Cowdray Park</option>";
+                                        wardSelect.innerHTML += "<option value='Emakhandeni-Entumbane'>Emakhandeni-Entumbane</option>";
+                                        wardSelect.innerHTML += "<option value='Nkulumane'>Nkulumane</option>";
+                                        wardSelect.innerHTML += "<option value='Magwegwe'>Magwegwe</option>";
+                                        wardSelect.innerHTML += "<option value='Mpopoma-Pelandaba'>Mpopoma-Pelandaba</option>";
+                                        wardSelect.innerHTML += "<option value='Nketa-Emganwini'>Nketa-Emganwini</option>";
+                                        wardSelect.innerHTML += "<option value='Pumula'>Pumula</option>";
+                                        wardSelect.innerHTML += "<option value=' Hillside'> Hillside</option>";
+                                    
+                                    } else if(selectedDistrict === "Buhera") {
+                                        wardSelect.innerHTML += "<option value='Ward 1'>Ward 1</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 2'>Ward 2</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 3'>Ward 3</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 4'>Ward 4</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 5'>Ward 5</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 6'>Ward 6</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 7'>Ward 7</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 8'>Ward 8</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 9'>Ward 9</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 10'>Ward 10</option>";
+                                    }  else if(selectedDistrict === "Bindura") {
+                                        wardSelect.innerHTML += "<option value='Ward 1'>Ward 1</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 2'>Ward 2</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 3'>Ward 3</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 4'>Ward 4</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 5'>Ward 5</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 6'>Ward 6</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 7'>Ward 7</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 8'>Ward 8</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 9'>Ward 9</option>";
+                                        wardSelect.innerHTML += "<option value='Ward 10'>Ward 10</option>";
+                                    }
+                                    
+                                    
+                                    // Add options for other districts as needed
+                                }
+                            </script>
+        </div>
+    </div>           
+</div>
+<style>
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: -150px;
+    }
+    
+    #input-container {
+      display: flex;
+      margin-bottom: 5px;
+    }
+    
+    #unit-select {
+      margin-left: 10px;
+    }
+    
+    label {
+      margin-right: 10px;
+    }
+    
+    input, select {
+      padding: 5px;
+      font-size: 14px;
+    }
+  </style>
+  
+  <div id="container">
+   <small> <p>Use the calculator below for inter-conversion between units</p></small>
+    <div id="input-container">
+      <label for="area-input">Area:</label>
+      <input type="text" id="area-input" name="area" pattern="[0-9]+([\\.,][0-9]+)?" required>
+  
+      <label for="unit-select">Unit:</label>
+      <select id="unit-select" name="unit">
+        <option value="m2">Square meters</option>
+        <option value="acres">Acres</option>
+        <option value="hectares" selected>Hectares</option>
+      </select>
+    </div>
+  
+    <br>
+  
+    <label for="area-result">Result:</label>
+    <p id="area-result"></p>
+  </div>
+  
+  <script>
+    const areaInput = document.getElementById('area-input');
+    const unitSelect = document.getElementById('unit-select');
+    const resultElement = document.getElementById('area-result');
+  
+    const updateResult = () => {
+      let area = parseFloat(areaInput.value);
+  
+      if (isNaN(area)) {
+        area = 0;
+      }
+  
+      switch (unitSelect.value) {
+        case 'm2':
+          area /= 10000;
+          break;
+        case 'acres':
+          area *= 0.404686;
+          break;
+        default:
+          // hectares, no conversion needed
+          break;
+      }
+  
+      const result = area.toFixed(2); // display result rounded to 2 decimal places
+  
+      resultElement.textContent = `${result} hectares`;
+    };
+  
+    areaInput.addEventListener('input', updateResult);
+    unitSelect.addEventListener('change', updateResult);
+    resultElement.style.marginLeft = '20px';
+  </script>       
+
+
+<style>
+    /* Center alignment for the form */
+    .form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Dark grey background color for the submit button */
+    .form-container .btn-dark {
+        background-color: #333;
+        color: #fff;
+    }
+</style>
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+     <!-- footer section start-->
+
+     <footer
+     class="text-center text-lg-start text-white"
+     style="background-color: #3e4551"
+     >
+     <!-- Grid container -->
+     <div class="container p-4 pb-0">
+     <!-- Section: Links -->
+     <section class="">
+     <!--Grid row-->
+     <div class="row">
+     <!-- Grid column -->
+     <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+     <h6 class="text-uppercase mb-4 font-weight-bold">
+         <span class="nutrient">Nutrient-</span>Value 
+         <style>
+         .nutrient {
+             color: rgb(49, 247, 49);
+         }
+     </style>
+     </h6>
+     <p>
+         We bring you the future of farming for maximum success.
+         <br> <br> 
+         <br> <br>
+         A Farmer's True Friend.
+     </p>
+     </div>
+     <!-- Grid column -->
+
+     <hr class="w-100 clearfix d-md-none" />
+
+     <!-- Grid column -->
+     <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+     <h6 class="text-uppercase mb-4 font-weight-bold">Products</h6>
+     <p>
+         <a class="text-white" href="news">Latest News</a>
+     </p>
+     <p>
+         <a class="text-white" href="weather">Weather Forecast</a>
+     </p>
+     <p>
+         <a class="text-white" href="crop">Crop</a>
+     </p>
+     <p>
+         <a class="text-white" href="fertilizer">Fertilizer</a>
+     </p>
+     </div>
+     <!-- Grid column -->
+
+     <hr class="w-100 clearfix d-md-none" />
+
+     <!-- Grid column -->
+     <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+     <h6 class="text-uppercase mb-4 font-weight-bold">
+         Useful links
+     </h6>
+     <p>
+         <a class="text-white">Your Account</a>
+     </p>
+     <p>
+         <a class="text-white">Become an Affiliate</a>
+     </p>
+     <p>
+         <a class="text-white">Farmer's Loans</a>
+     </p>
+     <p>
+         <a class="text-white">Help</a>
+     </p>
+     </div>
+
+     <!-- Grid column -->
+     <hr class="w-100 clearfix d-md-none" />
+
+     <!-- Grid column -->
+     <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+     <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
+     <p><i class="fas fa-home mr-3"></i> Bulawayo, ZW</p>
+     <p><i class="fas fa-envelope mr-3"></i> info@nvr.com</p>
+     <p><i class="fas fa-phone mr-3"></i> + 01 234 567 88</p>
+     <p><i class="fas fa-print mr-3"></i> + 01 234 567 89</p>
+     </div>
+     <!-- Grid column -->
+     </div>
+     <!--Grid row-->
+     </section>
+     <!-- Section: Links -->
+
+     <hr class="my-3">
+
+     <!-- Section: Copyright -->
+     <section class="p-3 pt-0">
+     <div class="row d-flex align-items-center">
+     <!-- Grid column -->
+     <div class="col-md-7 col-lg-8 text-center text-md-start">
+     <!-- Copyright -->
+     <div class="p-3">
+         © 2024 Copyright:
+         <a class="text-white" href="#"
+         >nutrient-value.com</a
+         >
+     </div>
+     <!-- Copyright -->
+     </div>
+     <!-- Grid column -->
+
+     <!-- Grid column -->
+     <div class="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
+     <!-- Facebook -->
+     <a
+         class="btn btn-outline-light btn-floating m-1"
+         class="text-white"
+         role="button"
+         ><i class="fab fa-facebook-f"></i
+         ></a>
+
+     <!-- Twitter -->
+     <a
+         class="btn btn-outline-light btn-floating m-1"
+         class="text-white"
+         role="button"
+         ><i class="fab fa-twitter"></i
+         ></a>
+
+     <!-- Google -->
+     <a
+         class="btn btn-outline-light btn-floating m-1"
+         class="text-white"
+         role="button"
+         ><i class="fab fa-google"></i
+         ></a>
+
+     <!-- Instagram -->
+     <a
+         class="btn btn-outline-light btn-floating m-1"
+         class="text-white"
+         role="button"
+         ><i class="fab fa-instagram"></i
+         ></a>
+     </div>
+     <!-- Grid column -->
+     </div>
+     </section>
+     <!-- Section: Copyright -->
+     </div>
+     <!-- Grid container -->
+  </footer>
+     <!-- Footer -->
+     <!-- footer section end -->
+</html>
+{% endblock body %}
